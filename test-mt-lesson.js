@@ -1,37 +1,15 @@
+
 var fs = require( 'fs' );
 var phantomcss = require('./node_modules/phantomcss/phantomcss.js');
+
+var testOptions = require('./test-options.js');
 
 var lessonId = '522776';
 lessonId = '634877';
 
-var MTPSources = {
-    local: 'http://bl.com/lesson/',
-    dev: 'http://dev.betterlesson.com/lesson/',
-    live: 'http://betterlesson.com/lesson/'
-};
+var screenshotUrl = testOptions.lessonSources.live + lessonId;
 
-var screenshotUrl = MTPSources.live + lessonId;
-
-var viewports = [
-  {
-    'name': 'iphone5-portrait',
-    'viewport': {width: 320, height: 568}
-  },
-  {
-    'name': 'iphone5-landscape',
-    'viewport': {width: 568, height: 320}
-  },
-  {
-    'name': 'ipad-portrait',
-    'viewport': {width: 768, height: 1024}
-  },
-  {
-    'name': 'desktop-standard-hd',
-    'viewport': {width: 1280, height: 720}
-  },
-];
-
-// update settings to display logging to console
+// // update settings to display logging to console
 casper.options.logLevel = 'debug';
 casper.options.verbose = true;
 
@@ -73,11 +51,7 @@ casper.test.begin('BL public page tests', function( test ) {
   });
 
   // for each viewport in the viewport object
-  casper.each(viewports, function(casper, viewport) {
-
-    // this.then(function() {
-    //   this.viewport(viewport.viewport.width, viewport.viewport.height);
-    // });
+  casper.each(testOptions.viewports, function(casper, viewport) {
     
     // give the images 5 seconds to allow the images to load
     // @ TODO replace with images loaded evaluation

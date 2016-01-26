@@ -1,12 +1,13 @@
 
-var options = {
-  lessonSources: {
+// var testOptions = {
+  
+  exports.lessonSources = {
     local: 'http://bl.com/lesson/',
     dev: 'http://dev.betterlesson.com/lesson/',
     live: 'http://betterlesson.com/lesson/'
-  },
+  };
 
-  viewports = [{
+  exports.viewports = [{
     'name': 'iphone5-portrait',
     'viewport': {
       width: 320, 
@@ -30,8 +31,6 @@ var options = {
       width: 1280, 
       height: 720
     }
-  }]
-}
+  }];
 
-
-export default options;
+// };
