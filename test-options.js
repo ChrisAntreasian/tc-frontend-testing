@@ -22,20 +22,20 @@
       width: 568, 
       height: 320
     }
-  }, {
-    'name': 'tablet-p',
-    'device': 'ipad-portrait',
-    'viewport': {
-      width: 768, 
-      height: 1024
-    }
-  }, {
-    'name': 'desktop',
-    'device': 'desktop-standard-hd',
-    'viewport': {
-      width: 1280, 
-      height: 720
-    }
+  // }, {
+  //   'name': 'tablet-p',
+  //   'device': 'ipad-portrait',
+  //   'viewport': {
+  //     width: 768, 
+  //     height: 1024
+  //   }
+  // }, {
+  //   'name': 'desktop',
+  //   'device': 'desktop-standard-hd',
+  //   'viewport': {
+  //     width: 1280, 
+  //     height: 720
+  //   }
   }];
 
 // };

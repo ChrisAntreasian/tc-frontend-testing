@@ -1,9 +1,11 @@
 
 var fs = require( 'fs' );
 var phantomcss = require('./node_modules/phantomcss/phantomcss.js');
-
 var testOptions = require('./test-options.js');
 
+// update settings to display logging to console
+// casper.options.logLevel = 'debug';
+casper.options.verbose = true;
 
 // make sure the user included a lesson id as an argument
 if (!casper.cli.get('id')) {
@@ -17,9 +19,23 @@ var branch = !casper.cli.get('branch') ? 'prod' : casper.cli.get('branch');
 var lessonId = casper.cli.get('id');
 var screenshotUrl = testOptions.lessonSources[branch] + lessonId;
 
-// update settings to display logging to console
-casper.options.logLevel = 'debug';
-casper.options.verbose = true;
+function setUpPhantomMessaging() {
+    
+    // phantom has a message tell us about it 
+    casper.on( 'remote.message', function ( msg ) {
+        this.echo( msg );
+    });
+
+    // phantom has errored
+    casper.on( 'error', function ( err ) {
+        this.die( "PhantomJS has errored: " + err );
+    });
+
+    // phantom cant load the resource
+    casper.on( 'resource.error', function ( err ) {
+        casper.log( 'Resource load error: ' + err, 'warning' );
+    });
+}
 
 // set up the casper test case
 casper.test.begin('BL public page tests', function( test ) {
@@ -37,57 +53,60 @@ casper.test.begin('BL public page tests', function( test ) {
         addLabelToFailedImage: false
     });
 
-    // phantom has a message tell us about it 
-    casper.on( 'remote.message', function ( msg ) {
-        this.echo( msg );
-    });
-
-    // phantom has errored
-    casper.on( 'error', function ( err ) {
-        this.die( "PhantomJS has errored: " + err );
-    });
-
-    // phantom cant load the resource
-    casper.on( 'resource.error', function ( err ) {
-        casper.log( 'Resource load error: ' + err, 'warning' );
-    });
+    // error and remote messaging from casper
+    setUpPhantomMessaging();
 
     // navigate to the appropreate url
     casper.start(screenshotUrl);
 
     // let us know that you got there correctly
     casper.then( function() {
-        this.echo('Current location: ' + this.getCurrentUrl(), 'GREEN_BAR');
+        this.echo('Beginning Test For: ' + this.getCurrentUrl(), 'GREEN_BAR');
     });
-
+    
     // for each viewport in the viewport object
     casper.each(testOptions.viewports, function(casper, viewport) {
         
         // set the view port of the page
-        this.then(function() {
-            this.viewport(viewport.viewport.width, viewport.viewport.height);
-        });
-        
+        this.viewport(
+            viewport.viewport.width, 
+            viewport.viewport.height
+        );
+
         // give the images 5 seconds to allow the images to load
         // @ TODO replace with images loaded evaluation
         this.thenOpen(screenshotUrl, function() {
             this.wait(5000);
         });
+
+        var pageHeight;
         
-        // evaluate the bodys height with the document's instance of jquery
-        this.then(function() {
-            pageHeight = this.evaluate(function() {
+        // get height of web page if parameter is set
+        this.then( function() {
+            pageHeight = this.evaluate( function(fullPage) {
+                
+                // hide tool tips and flash messages
+                jQuery('#flash-messages, .ui-tooltip').hide();
+                
+                if (!fullPage) { 
+                    return false;
+                }
+
                 return jQuery('body').height();
-            });
+
+            }, casper.cli.get('fullPage'));
         });
-            
+        
+        // set screen shot height to page height if it is returned from the valuate
+        viewportHeight = pageHeight ? pageHeight : viewport.viewport.height;
+
         // take a screen shot with the screen shot width and the page height
         this.then(function(){
             phantomcss.screenshot({
                 top: 0,
                 left: 0,
                 width: viewport.viewport.width,
-                height: pageHeight
+                height: viewportHeight
             }, 'lesson-' + lessonId + '-' + viewport.name);
         });
     });
