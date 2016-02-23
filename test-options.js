@@ -9,13 +9,13 @@
   };
 
   exports.viewports = [{
-    'name': 'phone-p',
-    'device': 'iphone-portrait',
-    'viewport': {
-      width: 320, 
-      height: 568
-    }
-  }, {
+  //   'name': 'phone-p',
+  //   'device': 'iphone-portrait',
+  //   'viewport': {
+  //     width: 320, 
+  //     height: 568
+  //   }
+  // }, {
     'name': 'phone-l',
     'device': 'iphone5-landscape',
     'viewport': {

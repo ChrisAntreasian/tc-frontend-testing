@@ -68,16 +68,22 @@ casper.test.begin('BL public page tests', function( test ) {
     casper.each(testOptions.viewports, function(casper, viewport) {
         
         // set the view port of the page
-        this.viewport(
-            viewport.viewport.width, 
-            viewport.viewport.height
-        );
-
-        // give the images 5 seconds to allow the images to load
-        // @ TODO replace with images loaded evaluation
+        this.then( function() {
+            this.viewport( viewport.viewport.width, viewport.viewport.height).then( function() {
+                this.wait(100000);
+            });
+        });
+        
+        console.log(this.viewport);
+        // console.log(JSON.stringify(viewport.viewport.width));
+        
+        console.log(JSON.stringify(this.page.viewportSize));
+        // give the images 5 seconds to allow the images to load and viewport to take effect
         this.thenOpen(screenshotUrl, function() {
             this.wait(5000);
         });
+                
+        // @ TODO images loaded evaluation
 
         var pageHeight;
         
@@ -87,6 +93,13 @@ casper.test.begin('BL public page tests', function( test ) {
                 
                 // hide tool tips and flash messages
                 jQuery('#flash-messages, .ui-tooltip').hide();
+                
+                // remove side effects of visible flash messages
+                jQuery('#common_header').removeClass('header-displaying-alert');
+                jQuery('#common_container').removeClass('content-displaying-alert inline-alert-visible');
+                jQuery('.navigation-breadcrumbs-wrap').removeClass('standards-displaying-alert');
+                jQuery('.lesson-greenbar').removeClass('greenbar-displaying-alert');
+                jQuery('#resource_overlay').removeClass('resource-displaying-alert');
                 
                 if (!fullPage) { 
                     return false;
